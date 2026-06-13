@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* Modo oscuro por clase en <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Tokens de diseño ──────────────────────────────────────────────────────
+   Paleta reducida: fondo, texto y UN color de acento.
+   Cambia --accent en un solo sitio para recolorear toda la app. */
+:root {
+  --background: #ffffff;
+  --surface: #fafafa;
+  --border: #ececec;
+  --foreground: #18181b;
+  --muted: #6b7280;
+  --accent: #6d5cff;
+  --accent-foreground: #ffffff;
+}
+
+.dark {
+  --background: #0b0b0d;
+  --surface: #141417;
+  --border: #26262b;
+  --foreground: #f4f4f5;
+  --muted: #9ca3af;
+  --accent: #8b7dff;
+  --accent-foreground: #0b0b0d;
+}
+
+/* Exponer los tokens como utilidades Tailwind: bg-background, text-muted, etc. */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Evita el flash de tema claro antes de hidratar (ver script en layout). */
