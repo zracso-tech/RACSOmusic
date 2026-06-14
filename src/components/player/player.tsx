@@ -123,24 +123,63 @@ export function Player({
   );
 
   const transport = (
-    <div className="flex items-center gap-3">
-      <button
-        onClick={toggle}
-        className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground transition-opacity hover:opacity-90"
-        aria-label={isPlaying ? "Pausa" : "Reproducir"}
-      >
-        {isPlaying ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
-      </button>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggle}
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground transition-opacity hover:opacity-90"
+          aria-label={isPlaying ? "Pausa" : "Reproducir"}
+        >
+          {isPlaying ? (
+            <Pause size={22} />
+          ) : (
+            <Play size={22} className="ml-0.5" />
+          )}
+        </button>
 
-      {duration > 0 && (
-        <span className="font-mono text-xs text-muted tabular-nums">
-          {fmt(currentTime)} / {fmt(duration)}
-        </span>
-      )}
+        {duration > 0 && (
+          <span className="font-mono text-xs text-muted tabular-nums">
+            {fmt(currentTime)} / {fmt(duration)}
+          </span>
+        )}
 
+        <div className="ml-auto flex items-center gap-1">
+          {perf && (
+            <>
+              <button
+                onClick={() => setFontScale((s) => Math.max(0.8, s - 0.2))}
+                className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
+                aria-label="Reducir letra"
+              >
+                <Minus size={18} />
+              </button>
+              <button
+                onClick={() => setFontScale((s) => Math.min(3, s + 0.2))}
+                className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
+                aria-label="Aumentar letra"
+              >
+                <Plus size={18} />
+              </button>
+            </>
+          )}
+          {hasStage && (
+            <button
+              onClick={() => setPerf((p) => !p)}
+              className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
+              aria-label={
+                perf ? "Salir de pantalla completa" : "Pantalla completa"
+              }
+            >
+              {perf ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Velocímetro de scroll en su propia fila (a lo ancho, visible en móvil) */}
       {speedScroll && (
-        <label className="flex flex-1 items-center gap-2 text-xs text-muted">
-          Velocidad
+        <label className="flex items-center gap-3 text-xs text-muted">
+          <span className="shrink-0">Velocidad</span>
           <input
             type="range"
             min={10}
@@ -151,36 +190,6 @@ export function Player({
           />
         </label>
       )}
-
-      <div className="ml-auto flex items-center gap-1">
-        {perf && (
-          <>
-            <button
-              onClick={() => setFontScale((s) => Math.max(0.8, s - 0.2))}
-              className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
-              aria-label="Reducir letra"
-            >
-              <Minus size={18} />
-            </button>
-            <button
-              onClick={() => setFontScale((s) => Math.min(3, s + 0.2))}
-              className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
-              aria-label="Aumentar letra"
-            >
-              <Plus size={18} />
-            </button>
-          </>
-        )}
-        {hasStage && (
-          <button
-            onClick={() => setPerf((p) => !p)}
-            className="grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface hover:text-foreground"
-            aria-label={perf ? "Salir de pantalla completa" : "Pantalla completa"}
-          >
-            {perf ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-          </button>
-        )}
-      </div>
     </div>
   );
 

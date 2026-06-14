@@ -147,6 +147,13 @@ export function RecordStudio({
     }
 
     try {
+      // YouTube: arranca el vídeo DENTRO del gesto del usuario (antes del await
+      // del permiso de micro), si no el móvil bloquea la reproducción.
+      if (source === "youtube") {
+        yt.seekTo(0);
+        yt.play();
+      }
+
       const micStream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true },
       });
@@ -182,12 +189,10 @@ export function RecordStudio({
         recordStream = dest.stream;
       } else {
         recordStream = micStream;
-        if (source === "youtube") {
-          yt.seekTo(0);
-          yt.play();
-        } else {
+        if (source === "none") {
           virtual.current = { t: 0, playing: true, lastTs: performance.now() };
         }
+        // (YouTube ya se arrancó arriba, dentro del gesto)
       }
 
       const mime = pickMime();
@@ -322,26 +327,26 @@ export function RecordStudio({
 
       {/* Controles */}
       <div className="rounded-2xl border border-border bg-surface p-5">
+        {/* Velocímetro: fila propia, visible antes y durante la grabación */}
+        {speedScroll && (state === "idle" || state === "recording") && (
+          <label className="mb-4 flex items-center gap-3 text-xs text-muted">
+            <span className="shrink-0">Velocidad de scroll</span>
+            <input
+              type="range"
+              min={10}
+              max={160}
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="flex-1 accent-[var(--accent)]"
+            />
+          </label>
+        )}
+
         {state === "idle" && (
-          <div className="flex flex-col gap-3">
-            {speedScroll && (
-              <label className="flex items-center gap-2 text-xs text-muted">
-                Velocidad de scroll
-                <input
-                  type="range"
-                  min={10}
-                  max={160}
-                  value={speed}
-                  onChange={(e) => setSpeed(Number(e.target.value))}
-                  className="flex-1 accent-[var(--accent)]"
-                />
-              </label>
-            )}
-            <Button size="lg" onClick={startRecording} className="w-full">
-              <Mic size={20} />
-              Empezar a grabar
-            </Button>
-          </div>
+          <Button size="lg" onClick={startRecording} className="w-full">
+            <Mic size={20} />
+            Empezar a grabar
+          </Button>
         )}
 
         {state === "recording" && (
