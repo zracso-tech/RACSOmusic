@@ -15,6 +15,7 @@ import { getYouTubeId } from "@/lib/youtube";
 import { hasLrcTimestamps } from "@/lib/lrc";
 import { useYouTube } from "./use-youtube";
 import { PracticeStage, songHasStage, type Clock } from "./practice-stage";
+import { SpeedControl } from "./speed-control";
 import type { Song } from "@/types/database";
 
 type Source = "audio" | "youtube" | "none";
@@ -176,20 +177,8 @@ export function Player({
         </div>
       </div>
 
-      {/* Velocímetro de scroll en su propia fila (a lo ancho, visible en móvil) */}
-      {speedScroll && (
-        <label className="flex items-center gap-3 text-xs text-muted">
-          <span className="shrink-0">Velocidad</span>
-          <input
-            type="range"
-            min={10}
-            max={160}
-            value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-            className="flex-1 accent-[var(--accent)]"
-          />
-        </label>
-      )}
+      {/* Velocímetro de scroll en su propia fila */}
+      {speedScroll && <SpeedControl value={speed} onChange={setSpeed} />}
     </div>
   );
 

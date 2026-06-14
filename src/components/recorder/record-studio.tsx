@@ -9,6 +9,7 @@ import { getYouTubeId } from "@/lib/youtube";
 import { hasLrcTimestamps } from "@/lib/lrc";
 import { useYouTube } from "@/components/player/use-youtube";
 import { PracticeStage, type Clock } from "@/components/player/practice-stage";
+import { SpeedControl } from "@/components/player/speed-control";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Song } from "@/types/database";
@@ -329,17 +330,9 @@ export function RecordStudio({
       <div className="rounded-2xl border border-border bg-surface p-5">
         {/* Velocímetro: fila propia, visible antes y durante la grabación */}
         {speedScroll && (state === "idle" || state === "recording") && (
-          <label className="mb-4 flex items-center gap-3 text-xs text-muted">
-            <span className="shrink-0">Velocidad de scroll</span>
-            <input
-              type="range"
-              min={10}
-              max={160}
-              value={speed}
-              onChange={(e) => setSpeed(Number(e.target.value))}
-              className="flex-1 accent-[var(--accent)]"
-            />
-          </label>
+          <div className="mb-4">
+            <SpeedControl value={speed} onChange={setSpeed} />
+          </div>
         )}
 
         {state === "idle" && (
