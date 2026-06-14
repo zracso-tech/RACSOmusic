@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { hasLrcTimestamps, parseLrc, stripLrc } from "@/lib/lrc";
-import { hasChords } from "@/lib/chordpro";
 import { cn } from "@/lib/utils/cn";
 import { LrcLyrics } from "./lrc-lyrics";
 import { ChordSheet } from "./chord-sheet";
@@ -17,9 +16,7 @@ export interface Clock {
 /** ¿La canción tiene algo que mostrar/scrollear (letra o acordes)? */
 export function songHasStage(song: Song): boolean {
   return !!(
-    (song.module === "guitar" &&
-      song.chords_content &&
-      hasChords(song.chords_content)) ||
+    (song.module === "guitar" && song.chords_content?.trim()) ||
     song.lyrics_content
   );
 }
@@ -42,10 +39,10 @@ export function PracticeStage({
   speed?: number;
   heightClass?: string;
 }) {
+  // En guitarra, cualquier contenido en el campo de acordes manda (va arriba),
+  // lleve o no corchetes ChordPro.
   const chordMode =
-    song.module === "guitar" &&
-    !!song.chords_content &&
-    hasChords(song.chords_content);
+    song.module === "guitar" && !!song.chords_content?.trim();
   const lrcMode =
     !chordMode && !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
   const plainMode = !chordMode && !lrcMode && !!song.lyrics_content;
@@ -56,7 +53,6 @@ export function PracticeStage({
 
   const [currentTime, setCurrentTime] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const durationRef = useRef(0);
   const clockRef = useRef(getClock);
   clockRef.current = getClock;
   const speedRef = useRef(speed);
@@ -68,17 +64,13 @@ export function PracticeStage({
     const tick = (now: number) => {
       const dt = (now - last) / 1000;
       last = now;
-      const { time, duration, playing } = clockRef.current();
+      const { time, playing } = clockRef.current();
       setCurrentTime(time);
-      if (duration && Math.abs(duration - durationRef.current) > 0.5) {
-        durationRef.current = duration;
-      }
+      // Autoscroll por velocímetro en todo lo que no sea LRC (LRC se centra solo).
       const el = scrollRef.current;
-      if (el && !lrcMode) {
+      if (el && !lrcMode && playing) {
         const max = el.scrollHeight - el.clientHeight;
-        if (durationRef.current > 0) {
-          el.scrollTop = Math.min(max, (time / durationRef.current) * max);
-        } else if (playing && max > 0) {
+        if (max > 0) {
           el.scrollTop = Math.min(max, el.scrollTop + speedRef.current * dt);
         }
       }

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Field } from "@/components/ui/field";
+import { LrcGenerator } from "./lrc-generator";
 import type { Module, Song } from "@/types/database";
 
 type BackingChoice = "none" | "file" | "youtube";
@@ -294,6 +295,13 @@ export function SongForm({
               ? "[00:12.50] Primera línea\n[00:18.20] Segunda línea"
               : "Escribe aquí la letra…"
           }
+        />
+        <LrcGenerator
+          backingFile={backing === "file" ? file : null}
+          onResult={(lrc) => {
+            setLyricsContent(lrc);
+            setLyricsFormat("lrc");
+          }}
         />
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { Music4 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +63,17 @@ export default function LoginPage() {
                 : "Crear cuenta"}
           </Button>
         </form>
+
+        {mode === "signin" && (
+          <p className="mt-3 text-center text-sm">
+            <Link
+              href="/forgot"
+              className="text-muted hover:text-foreground hover:underline"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
+        )}
 
         <p className="mt-6 text-center text-sm text-muted">
           {mode === "signin" ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{" "}

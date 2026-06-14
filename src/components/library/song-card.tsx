@@ -66,6 +66,11 @@ export function SongCard({ song, view }: { song: Song; view: "grid" | "list" }) 
           ))}
         </div>
       )}
+      {song.sent_by_name && (
+        <span className="w-fit rounded-full bg-accent/10 px-2 py-0.5 text-xs text-accent">
+          Enviada por {song.sent_by_name}
+        </span>
+      )}
       <span className="mt-auto text-xs text-muted">
         {formatDate(song.created_at)}
       </span>

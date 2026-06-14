@@ -32,6 +32,7 @@ export interface Song {
   chords_content: string | null;
   notes: string | null;
   document_path: string | null;
+  sent_by_name: string | null;
   created_at: string;
   updated_at: string;
   last_practiced_at: string | null;

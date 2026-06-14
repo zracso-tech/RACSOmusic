@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { getYouTubeId } from "@/lib/youtube";
 import { hasLrcTimestamps } from "@/lib/lrc";
-import { hasChords } from "@/lib/chordpro";
 import { useYouTube } from "./use-youtube";
 import { PracticeStage, songHasStage, type Clock } from "./practice-stage";
 import type { Song } from "@/types/database";
@@ -42,14 +41,12 @@ export function Player({
         ? "youtube"
         : "none";
 
-  // ¿Hay autoscroll por velocidad? Solo cuando no hay pista temporal y la letra
-  // no tiene marcas LRC.
+  // El velocímetro se muestra en todo scroll que no sea LRC (en LRC el scroll
+  // va sincronizado por las marcas de tiempo).
   const lrcMode = !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
   const chordMode =
-    song.module === "guitar" &&
-    !!song.chords_content &&
-    hasChords(song.chords_content);
-  const speedScroll = source === "none" && !lrcMode && (chordMode || !!song.lyrics_content);
+    song.module === "guitar" && !!song.chords_content?.trim();
+  const speedScroll = !lrcMode && (chordMode || !!song.lyrics_content);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const yt = useYouTube("yt-player", source === "youtube" ? ytId : null);

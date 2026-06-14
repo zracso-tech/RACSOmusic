@@ -14,6 +14,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { getYouTubeId, youTubeThumb } from "@/lib/youtube";
 import { DeleteSongButton } from "@/components/song/delete-song-button";
+import { SendSongButton } from "@/components/song/send-song-button";
 import type { Song } from "@/types/database";
 
 export default async function SongDetailPage({
@@ -23,6 +24,9 @@ export default async function SongDetailPage({
 }) {
   const { songId } = await params;
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { data } = await supabase
     .from("songs")
     .select("*")
@@ -81,6 +85,11 @@ export default async function SongDetailPage({
                   #{t}
                 </span>
               ))}
+              {song.sent_by_name && (
+                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-accent">
+                  Enviada por {song.sent_by_name}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -109,6 +118,7 @@ export default async function SongDetailPage({
           <Pencil size={16} />
           Editar
         </Link>
+        {user && <SendSongButton songId={song.id} senderId={user.id} />}
         <DeleteSongButton songId={song.id} />
       </div>
 

@@ -33,6 +33,21 @@ export function parseLrc(content: string): LrcLine[] {
   return out;
 }
 
+/** Construye texto LRC a partir de segmentos {start, text} de transcripción. */
+export function segmentsToLrc(
+  segments: { start: number; text: string }[],
+): string {
+  return segments
+    .filter((s) => s.text.trim())
+    .map((s) => {
+      const t = Math.max(0, s.start);
+      const m = Math.floor(t / 60);
+      const sec = (t % 60).toFixed(2).padStart(5, "0"); // ss.xx
+      return `[${String(m).padStart(2, "0")}:${sec}] ${s.text.trim()}`;
+    })
+    .join("\n");
+}
+
 /** Quita las marcas de tiempo LRC, dejando solo el texto. */
 export function stripLrc(content: string): string {
   return content.replace(TS, "");

@@ -7,7 +7,6 @@ import { createClient } from "@/lib/supabase/client";
 import { saveRecording } from "@/app/(app)/song/[songId]/record/actions";
 import { getYouTubeId } from "@/lib/youtube";
 import { hasLrcTimestamps } from "@/lib/lrc";
-import { hasChords } from "@/lib/chordpro";
 import { useYouTube } from "@/components/player/use-youtube";
 import { PracticeStage, type Clock } from "@/components/player/practice-stage";
 import { Button } from "@/components/ui/button";
@@ -61,10 +60,8 @@ export function RecordStudio({
 
   const lrcMode = !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
   const chordMode =
-    song.module === "guitar" &&
-    !!song.chords_content &&
-    hasChords(song.chords_content);
-  const speedScroll = source === "none" && !lrcMode && (chordMode || !!song.lyrics_content);
+    song.module === "guitar" && !!song.chords_content?.trim();
+  const speedScroll = !lrcMode && (chordMode || !!song.lyrics_content);
 
   const yt = useYouTube("yt-rec-player", source === "youtube" ? ytId : null);
 

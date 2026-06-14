@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Layers, Mic, Trash2 } from "lucide-react";
+import { Layers, Mic, Trash2, Share2 } from "lucide-react";
 import { deleteRecording } from "@/app/(app)/song/[songId]/record/actions";
 
 export interface RecordingItem {
@@ -41,6 +41,41 @@ export function RecordingsHistory({
 }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+
+  async function handleShare(rec: RecordingItem) {
+    if (!rec.url) return;
+    setSharingId(rec.id);
+    try {
+      const res = await fetch(rec.url);
+      const blob = await res.blob();
+      const ext = rec.storage_path.split(".").pop() || "webm";
+      const file = new File([blob], `grabacion.${ext}`, {
+        type: blob.type || "audio/webm",
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "Grabación RACSOmusic" });
+      } else if (navigator.share) {
+        await navigator.share({ title: "Grabación RACSOmusic", url: rec.url });
+      } else {
+        await navigator.clipboard.writeText(rec.url);
+        alert("Enlace de la grabación copiado.");
+      }
+    } catch (err) {
+      // Cancelar el diálogo de compartir lanza AbortError: lo ignoramos.
+      if (!(err instanceof Error) || err.name !== "AbortError") {
+        try {
+          await navigator.clipboard.writeText(rec.url);
+          alert("No se pudo compartir; enlace copiado al portapapeles.");
+        } catch {
+          /* noop */
+        }
+      }
+    } finally {
+      setSharingId(null);
+    }
+  }
 
   async function handleDelete(rec: RecordingItem) {
     if (!confirm("¿Borrar esta grabación? No se puede deshacer.")) return;
@@ -96,14 +131,24 @@ export function RecordingsHistory({
                 <p className="mt-1.5 text-sm text-muted">{rec.note}</p>
               )}
             </div>
-            <button
-              onClick={() => handleDelete(rec)}
-              disabled={deletingId === rec.id}
-              aria-label="Borrar grabación"
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-background hover:text-red-500 disabled:opacity-50"
-            >
-              <Trash2 size={16} />
-            </button>
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                onClick={() => handleShare(rec)}
+                disabled={sharingId === rec.id || !rec.url}
+                aria-label="Compartir grabación"
+                className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-background hover:text-accent disabled:opacity-50"
+              >
+                <Share2 size={16} />
+              </button>
+              <button
+                onClick={() => handleDelete(rec)}
+                disabled={deletingId === rec.id}
+                aria-label="Borrar grabación"
+                className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-background hover:text-red-500 disabled:opacity-50"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
           {rec.url && <audio src={rec.url} controls className="w-full" />}
         </li>
