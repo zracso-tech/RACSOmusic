@@ -305,7 +305,7 @@ export function RecordStudio({
         <PracticeStage
           song={song}
           getClock={getClock}
-          fontScale={1.25}
+          fontScale={chordMode ? 0.875 : 1.25}
           speed={speed}
           heightClass="h-[42vh]"
         />

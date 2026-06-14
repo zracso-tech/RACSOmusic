@@ -56,7 +56,8 @@ export function Player({
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState(40);
   const [perf, setPerf] = useState(false);
-  const [fontScale, setFontScale] = useState(1.4);
+  // En guitarra (acordes) usamos el mismo tamaño que la ficha; en voz, grande.
+  const [fontScale, setFontScale] = useState(chordMode ? 0.875 : 1.4);
 
   const virtual = useRef({ t: 0, playing: false, lastTs: 0 });
 
