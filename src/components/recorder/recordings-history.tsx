@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layers, Mic, Trash2, Share2 } from "lucide-react";
 import { deleteRecording } from "@/app/(app)/song/[songId]/record/actions";
+import { blobToWavFile } from "@/lib/audio-wav";
 
 export interface RecordingItem {
   id: string;
@@ -49,13 +50,20 @@ export function RecordingsHistory({
     try {
       const res = await fetch(rec.url);
       const blob = await res.blob();
-      const ext = rec.storage_path.split(".").pop() || "webm";
-      const file = new File([blob], `grabacion.${ext}`, {
-        type: blob.type || "audio/webm",
-      });
+
+      // WhatsApp y otros no aceptan webm: convertimos a WAV (universal).
+      let file: File;
+      try {
+        file = await blobToWavFile(blob, "grabacion-racsomusic.wav");
+      } catch {
+        const ext = rec.storage_path.split(".").pop() || "webm";
+        file = new File([blob], `grabacion.${ext}`, {
+          type: blob.type || "audio/webm",
+        });
+      }
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: "Grabación RACSOmusic" });
+        await navigator.share({ files: [file] });
       } else if (navigator.share) {
         await navigator.share({ title: "Grabación RACSOmusic", url: rec.url });
       } else {
