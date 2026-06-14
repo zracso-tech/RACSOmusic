@@ -59,7 +59,10 @@ export function RecordStudio({
         ? "youtube"
         : "none";
 
-  const lrcMode = !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
+  const lrcMode =
+    song.module !== "guitar" &&
+    !!song.lyrics_content &&
+    hasLrcTimestamps(song.lyrics_content);
   const chordMode =
     song.module === "guitar" && !!song.chords_content?.trim();
   const speedScroll = !lrcMode && (chordMode || !!song.lyrics_content);

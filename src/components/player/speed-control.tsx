@@ -6,7 +6,7 @@ export function SpeedControl({
   onChange,
   min = 10,
   max = 160,
-  step = 10,
+  step = 5,
 }: {
   value: number;
   onChange: (v: number) => void;

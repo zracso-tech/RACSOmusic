@@ -44,7 +44,12 @@ export function Player({
 
   // El velocímetro se muestra en todo scroll que no sea LRC (en LRC el scroll
   // va sincronizado por las marcas de tiempo).
-  const lrcMode = !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
+  // El LRC sincronizado es solo para voz; en guitarra mandan los acordes y el
+  // scroll va por velocímetro.
+  const lrcMode =
+    song.module !== "guitar" &&
+    !!song.lyrics_content &&
+    hasLrcTimestamps(song.lyrics_content);
   const chordMode =
     song.module === "guitar" && !!song.chords_content?.trim();
   const speedScroll = !lrcMode && (chordMode || !!song.lyrics_content);

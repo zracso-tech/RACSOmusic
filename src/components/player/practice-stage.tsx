@@ -44,7 +44,10 @@ export function PracticeStage({
   const chordMode =
     song.module === "guitar" && !!song.chords_content?.trim();
   const lrcMode =
-    !chordMode && !!song.lyrics_content && hasLrcTimestamps(song.lyrics_content);
+    !chordMode &&
+    song.module !== "guitar" &&
+    !!song.lyrics_content &&
+    hasLrcTimestamps(song.lyrics_content);
   const plainMode = !chordMode && !lrcMode && !!song.lyrics_content;
   const lrcLines = useMemo(
     () => (lrcMode ? parseLrc(song.lyrics_content!) : []),
